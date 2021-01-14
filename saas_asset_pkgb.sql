@@ -14,7 +14,7 @@ begin
 end;
 
 procedure renum_all_assets (
-   p_root_id in number) is
+   p_root_id in varchar2) is
    cursor asset_types is 
    -- Renumber order_id for all assets within the given root_id.
    select asset_type_id 
@@ -31,7 +31,7 @@ end;
 
 procedure renum_asset_type (
    p_type_id in number,
-   p_root_id in number) is 
+   p_root_id in varchar2) is 
    -- Renumbers the assets within given type and root_id.
    cursor assets is 
    select * from saas_asset 
@@ -51,7 +51,7 @@ end;
 
 procedure renum_asset_relation (
    p_parent_id in number,
-   p_root_id in number) is 
+   p_root_id in varchar2) is 
    cursor asset_relation is 
    -- Renumber the order_id for assets belonging to same parent in saas_asset_relation.
    select * from saas_asset_relation 
@@ -85,7 +85,7 @@ end;
 function get_asset_id (
    p_name in varchar2,
    p_type in saas_asset_types%rowtype,
-   p_root_id in number) return number is 
+   p_root_id in varchar2) return number is 
    n number;
 begin 
    select count(*) into n 
@@ -111,7 +111,7 @@ end;
 
 procedure raise_type_not_found (
    p_name in varchar2,
-   p_root_id in number) is 
+   p_root_id in varchar2) is 
 begin 
    if not does_type_exist(p_name=>p_name, p_root_id=>p_root_id) then 
       raise_application_error(-20001, 'Asset type not found: '||p_name||', '||p_root_id);
@@ -120,7 +120,7 @@ end;
 
 procedure create_type (
    p_name in varchar2,
-   p_root_id in number,
+   p_root_id in varchar2,
    p_order_id in number default 0) is 
 begin 
    insert into saas_asset_types (
@@ -144,7 +144,7 @@ end;
 
 function get_type (
    p_name in varchar2,
-   p_root_id in number) return saas_asset_types%rowtype is 
+   p_root_id in varchar2) return saas_asset_types%rowtype is 
    t saas_asset_types%rowtype;
 begin 
    raise_type_not_found(p_name=>p_name, p_root_id=>p_root_id);
@@ -165,7 +165,7 @@ end;
 
 function get_type_id (
    p_name in varchar2,
-   p_root_id in number) return number is 
+   p_root_id in varchar2) return number is 
    n number;
 begin 
    raise_type_not_found(p_name=>p_name, p_root_id=>p_root_id);
@@ -179,7 +179,7 @@ end;
 
 function does_type_exist (
    p_name in varchar2,
-   p_root_id in number) return boolean is 
+   p_root_id in varchar2) return boolean is 
    n number;
 begin 
    select count(*) into n 
@@ -195,7 +195,7 @@ end;
 
 function get_asset_type (
    p_name in varchar2,
-   p_root_id in number) return saas_asset_types%rowtype is 
+   p_root_id in varchar2) return saas_asset_types%rowtype is 
    v_asset_type saas_asset_types%rowtype;
 begin 
    select * into v_asset_type 
@@ -207,7 +207,7 @@ end;
 
 function get_asset_type_name_by_id (
    p_id number,
-   p_root_id in number) return varchar2 is 
+   p_root_id in varchar2) return varchar2 is 
    v varchar2(120);
 begin 
    arcsql.debug('get_asset_type_name_by_id: '||p_id||'~'||p_root_id);
@@ -220,7 +220,7 @@ end;
 
 function get_asset_type_id_by_name (
    p_name in varchar2,
-   p_root_id in number) return varchar2 is 
+   p_root_id in varchar2) return varchar2 is 
    n number;
 begin 
    arcsql.debug('get_asset_type_id_by_name: '||p_name||', '||p_root_id);
@@ -233,7 +233,7 @@ end;
 
 function get_asset (
    p_name in varchar2, 
-   p_root_id in number,
+   p_root_id in varchar2,
    p_type_name in varchar2) return saas_asset%rowtype is 
    r saas_asset%rowtype;
    v_asset_type saas_asset_types%rowtype;
@@ -253,7 +253,7 @@ end;
 function get_asset_by_id (
    p_id in number) return saas_asset%rowtype is  
    r saas_asset%rowtype;
-   v_root_id number := p_id;
+   v_root_id varchar2(120) := p_id;
 begin 
    arcsql.debug('get_asset_id: '||p_id);
    select * into r 
@@ -268,7 +268,7 @@ end;
 procedure create_asset (
    p_name in varchar2, 
    p_type_name in varchar2,
-   p_root_id in number) is 
+   p_root_id in varchar2) is 
    v_asset saas_asset%rowtype;
 begin 
    arcsql.debug('create_asset(p): '||p_name||'~'||p_type_name||'~'||p_root_id);
@@ -282,7 +282,7 @@ end;
 function create_asset (
    p_name in varchar2,
    p_type_name in varchar2,
-   p_root_id in number) return saas_asset%rowtype is 
+   p_root_id in varchar2) return saas_asset%rowtype is 
    v_asset_type saas_asset_types%rowtype;
    v_new_asset_id number;
 begin 
@@ -485,7 +485,7 @@ end;
 function does_asset_exist (
    p_name in varchar2,
    p_type_name in varchar2,
-   p_root_id in number) return boolean is 
+   p_root_id in varchar2) return boolean is 
    asset_id number;
    v_asset_type saas_asset_types%rowtype;
 begin 
